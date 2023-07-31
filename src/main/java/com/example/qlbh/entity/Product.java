@@ -47,10 +47,4 @@ public class Product {
     @Column(name = "trangThai")
     private Integer trangThai;
 
-    public Product(String masp) {
-    }
-
-    public Product(Product product1) {
-        product1.setChieuCao(this.getChieuCao());
-    }
 }
