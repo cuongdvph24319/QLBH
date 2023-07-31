@@ -40,7 +40,7 @@ public class ProductController {
 
     @PostMapping("/product/index")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        if (productRepositoty.existsById(product.getId())) {
+        if (productRepositoty.existsByMasp(product.getMasp())) {
             return ResponseEntity.badRequest().build();
         }
         productRepositoty.save(product);
@@ -51,10 +51,16 @@ public class ProductController {
     public ResponseEntity<Product> updateProduct(
             @PathVariable("masp") String masp,
             @RequestBody Product product) {
-        if (productRepositoty.existsByMasp(masp)) {
+        if (!productRepositoty.existsByMasp(masp)) {
             return ResponseEntity.notFound().build();
         }
-        productRepositoty.save(product);
+        else if(product.getId() == null){
+            product.setId(productRepositoty.getIdBymasp(masp));
+            productRepositoty.save(product);
+        }
+        else{
+            productRepositoty.save(product);
+        }
         return ResponseEntity.ok(product);
     }
 

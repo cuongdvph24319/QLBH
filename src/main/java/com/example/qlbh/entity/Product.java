@@ -1,9 +1,6 @@
 package com.example.qlbh.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,10 +11,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Product")
+@Table(name = "product")
 public class Product {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "masp")
@@ -29,22 +27,22 @@ public class Product {
     @Column(name = "gia")
     private Double gia;
 
-    @Column(name = "khoiLuong")
+    @Column(name = "khoiluong")
     private Double khoiLuong;
 
-    @Column(name = "chieuCao")
+    @Column(name = "chieucao")
     private Double chieuCao;
 
-    @Column(name = "chieuDai")
+    @Column(name = "chieudai")
     private Double chieuDai;
 
-    @Column(name = "chieuRong")
+    @Column(name = "chieurong")
     private Double chieuRong;
 
     @Column(name = "loai")
     private String loai;
 
-    @Column(name = "trangThai")
+    @Column(name = "trangthai")
     private Integer trangThai;
 
 }

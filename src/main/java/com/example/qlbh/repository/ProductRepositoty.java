@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepositoty extends JpaRepository<Product, Integer> {
     Page<Product> findAll(Specification<Product> specification, Pageable pageable);
+
     boolean existsByMasp(String masp);
 
-//    @Query("UPDATE Product p set p.trangThai = 0 WHERE p.masp = ?1")
-//    @Query(value = "UPDATE public.\"Product\" set \"trangThai\"= 0 WHERE masp = ?1", nativeQuery = true)
-//    void updateTrangThai(String masp);
+    @Query(value = "select id from \"product\" where masp = ?1", nativeQuery = true)
+    Integer getIdBymasp(String masp);
 
 }
