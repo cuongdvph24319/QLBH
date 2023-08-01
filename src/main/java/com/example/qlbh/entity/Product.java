@@ -1,6 +1,9 @@
 package com.example.qlbh.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +22,12 @@ public class Product {
     private Integer id;
 
     @Column(name = "masp")
+    @Size(max = 10, message = "Mã sản phẩm không quá 10 kí tự")
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Sai định dạng")
     private String masp;
 
     @Column(name = "tensp")
+    @Size(max = 200, message = "Tên sản phẩm không quá 200 kí tự")
     private String tensp;
 
     @Column(name = "gia")

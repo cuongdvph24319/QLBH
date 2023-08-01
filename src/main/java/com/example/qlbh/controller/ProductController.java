@@ -5,6 +5,7 @@ import com.example.qlbh.model.ProductDTO;
 import com.example.qlbh.repository.ProductRepositoty;
 import com.example.qlbh.repository.repositoryImpl.ProductCustomer;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,7 @@ public class ProductController {
     }
 
     @PostMapping("/product/index")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid Product product) {
         if (productRepositoty.existsByMasp(product.getMasp())) {
             return ResponseEntity.badRequest().build();
         }
@@ -56,9 +57,6 @@ public class ProductController {
         }
         else if(product.getId() == null){
             product.setId(productRepositoty.getIdBymasp(masp));
-            productRepositoty.save(product);
-        }
-        else{
             productRepositoty.save(product);
         }
         return ResponseEntity.ok(product);
