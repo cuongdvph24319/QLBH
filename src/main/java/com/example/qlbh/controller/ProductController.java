@@ -51,14 +51,14 @@ public class ProductController {
     @PutMapping("/product/index/{masp}")
     public ResponseEntity<Product> updateProduct(
             @PathVariable("masp") String masp,
-            @RequestBody Product product) {
+            @RequestBody @Valid Product product) {
         if (!productRepositoty.existsByMasp(masp)) {
             return ResponseEntity.notFound().build();
         }
-        else if(product.getId() == null){
-            product.setId(productRepositoty.getIdBymasp(masp));
-            productRepositoty.save(product);
-        }
+        product.setId(productRepositoty.getIdBymasp(masp));
+        product.setMasp(masp);
+        productRepositoty.saveAndFlush(product);
+
         return ResponseEntity.ok(product);
     }
 

@@ -27,7 +27,7 @@ public class Product {
     private String masp;
 
     @Column(name = "tensp")
-    @Size(max = 200, message = "Tên sản phẩm không quá 200 kí tự")
+    @Size(max = 10, message = "Tên sản phẩm không quá 200 kí tự")
     private String tensp;
 
     @Column(name = "gia")
