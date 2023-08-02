@@ -1,5 +1,6 @@
 package com.example.qlbh.entity;
 
+import com.example.qlbh.model.ProductDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Pattern;
@@ -22,12 +23,10 @@ public class Product {
     private Integer id;
 
     @Column(name = "masp")
-    @Size(max = 10, message = "Mã sản phẩm không quá 10 kí tự")
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Sai định dạng")
+
     private String masp;
 
     @Column(name = "tensp")
-    @Size(max = 10, message = "Tên sản phẩm không quá 200 kí tự")
     private String tensp;
 
     @Column(name = "gia")
@@ -51,4 +50,25 @@ public class Product {
     @Column(name = "trangthai")
     private Integer trangThai;
 
+    public void loadDTOC(ProductDTO productDTO) {
+        this.setMasp(productDTO.getMasp());
+        this.setTensp(productDTO.getTensp());
+        this.setLoai(productDTO.getLoai());
+        this.setGia(productDTO.getGia());
+        this.setKhoiLuong(productDTO.getKhoiLuong());
+        this.setChieuCao(productDTO.getChieuCao());
+        this.setChieuDai(productDTO.getChieuDai());
+        this.setChieuRong(productDTO.getChieuRong());
+        this.setTrangThai(productDTO.getTrangThai());
+    }
+    public void loadDTOU(ProductDTO productDTO) {
+        this.setTensp(productDTO.getTensp());
+        this.setLoai(productDTO.getLoai());
+        this.setGia(productDTO.getGia());
+        this.setKhoiLuong(productDTO.getKhoiLuong());
+        this.setChieuCao(productDTO.getChieuCao());
+        this.setChieuDai(productDTO.getChieuDai());
+        this.setChieuRong(productDTO.getChieuRong());
+        this.setTrangThai(productDTO.getTrangThai());
+    }
 }

@@ -22,28 +22,28 @@ public class ProductRepositoryImpl implements ProductCustomer {
     ProductRepositoty productRepositoty;
 
     @Override
-    public Page<Product> getAllByProductDTO(ProductDTO dto, Pageable pageable) {
+    public Page<Product> getAllByProductDTO(String masp, String tensp, String loai, Pageable pageable) {
 //        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 
         Specification<Product> specification = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (dto != null) {
-                if (dto.getMasp() != null) {
+
+                if (masp != null) {
                     predicates.add(criteriaBuilder.equal(
-                            root.get("masp"), dto.getMasp()
+                            root.get("masp"), masp
                     ));
                 }
-                if (dto.getTensp() != null) {
+                if (tensp != null) {
                     predicates.add(criteriaBuilder.equal(
-                            root.get("tensp"), dto.getTensp()
+                            root.get("tensp"), tensp
                     ));
                 }
-                if (dto.getLoai() != null) {
+                if (loai != null) {
                     predicates.add(criteriaBuilder.equal(
-                            root.get("loai"), dto.getLoai()
+                            root.get("loai"), loai
                     ));
                 }
-            }
+
             return criteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();
         };
 

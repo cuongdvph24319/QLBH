@@ -6,5 +6,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ProductCustomer {
-    Page<Product> getAllByProductDTO(ProductDTO dto, Pageable pageable);
+    Page<Product> getAllByProductDTO(String masp, String tensp, String loai, Pageable pageable);
 }

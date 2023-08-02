@@ -31,19 +31,17 @@ public class ProductController {
             @Parameter(hidden = true) Pageable pageable
 
     ) {
-        ProductDTO searchProductDTO = null;
-        if (masp != null || tensp != null || loai != null) {
-            searchProductDTO = new ProductDTO(masp, tensp, loai);
-        }
-        Page<Product> resp = productCustome.getAllByProductDTO(searchProductDTO, pageable);
+        Page<Product> resp = productCustome.getAllByProductDTO(masp, tensp, loai, pageable);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
     @PostMapping("/product/index")
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid Product product) {
-        if (productRepositoty.existsByMasp(product.getMasp())) {
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductDTO productDTO) {
+        if (productRepositoty.existsByMasp(productDTO.getMasp())) {
             return ResponseEntity.badRequest().build();
         }
+        Product product = new Product();
+        product.loadDTOC(productDTO);
         productRepositoty.save(product);
         return ResponseEntity.ok(product);
     }
@@ -51,14 +49,13 @@ public class ProductController {
     @PutMapping("/product/index/{masp}")
     public ResponseEntity<Product> updateProduct(
             @PathVariable("masp") String masp,
-            @RequestBody @Valid Product product) {
-        if (!productRepositoty.existsByMasp(masp)) {
+            @RequestBody @Valid ProductDTO productDTO) {
+        Product product = productRepositoty.findProductByMasp(masp);
+        if (product == null) {
             return ResponseEntity.notFound().build();
         }
-        product.setId(productRepositoty.getIdBymasp(masp));
-        product.setMasp(masp);
-        productRepositoty.saveAndFlush(product);
-
+        product.loadDTOU(productDTO);
+        productRepositoty.save(product);
         return ResponseEntity.ok(product);
     }
 
