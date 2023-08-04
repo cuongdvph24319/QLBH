@@ -17,7 +17,7 @@ public class ProductDTO {
     @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Sai định dạng")
     private String masp;
 
-    @Size(max = 10, message = "Tên sản phẩm không quá 200 kí tự")
+    @Size(max = 200, message = "Tên sản phẩm không quá 200 kí tự")
     private String tensp;
 
     private String loai;

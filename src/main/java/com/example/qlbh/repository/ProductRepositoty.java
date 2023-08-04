@@ -14,9 +14,6 @@ public interface ProductRepositoty extends JpaRepository<Product, Integer> {
 
     boolean existsByMasp(String masp);
 
-    @Query(value = "select id from \"product\" where masp = ?1", nativeQuery = true)
-    Integer getIdBymasp(String masp);
-
    Product findProductByMasp(String masp);
 
 }

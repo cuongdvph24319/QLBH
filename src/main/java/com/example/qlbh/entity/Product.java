@@ -23,7 +23,6 @@ public class Product {
     private Integer id;
 
     @Column(name = "masp")
-
     private String masp;
 
     @Column(name = "tensp")

@@ -14,6 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 public class ProductController {
@@ -22,6 +25,23 @@ public class ProductController {
 
     @Autowired
     ProductCustomer productCustome;
+
+//    @GetMapping("/product/index/{id}")
+//    public ResponseEntity<Product> findById(
+//            @PathVariable("id") Integer id
+//    ) {
+//        Product resp = productRepositoty.findById(id).orElse(null);
+//        return ResponseEntity.ok(resp);
+//    }
+//
+//    List<Product> list = Arrays.asList(
+//            new Product(1, "SP01", "A", 1.1, 2.3, 2.3, 3.4, 5.6, "A", 1)
+//    );
+//
+//    @GetMapping("/list")
+//    public ResponseEntity<List<Product>> getAll() {
+//        return ResponseEntity.ok(list);
+//    }
 
     @GetMapping(value = "/product/index", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> findByProduct(
