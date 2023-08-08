@@ -36,18 +36,4 @@ public class Account {
     @JoinColumn(name = "roles_id")
     private Role role;
 
-    public void loadAccountDTOC(AccountDTO accountDTO) {
-        this.setMa(accountDTO.getMa());
-        this.setTen(accountDTO.getTen());
-        this.setMatKhau(accountDTO.getMatKhau());
-        this.setEmail(accountDTO.getEmail());
-        this.setRole(accountDTO.getRole());
-    }
-
-    public void loadAccountDTOU(AccountDTO accountDTO) {
-        this.setTen(accountDTO.getTen());
-        this.setMatKhau(accountDTO.getMatKhau());
-        this.setEmail(accountDTO.getEmail());
-        this.setRole(accountDTO.getRole());
-    }
 }

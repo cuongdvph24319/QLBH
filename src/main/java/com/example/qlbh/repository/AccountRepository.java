@@ -10,4 +10,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     boolean existsByMa(String ma);
 
     Account findAccountByMa(String ma);
+
 }

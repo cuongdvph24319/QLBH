@@ -33,15 +33,6 @@ public class ProductController {
 //        Product resp = productRepositoty.findById(id).orElse(null);
 //        return ResponseEntity.ok(resp);
 //    }
-//
-//    List<Product> list = Arrays.asList(
-//            new Product(1, "SP01", "A", 1.1, 2.3, 2.3, 3.4, 5.6, "A", 1)
-//    );
-//
-//    @GetMapping("/list")
-//    public ResponseEntity<List<Product>> getAll() {
-//        return ResponseEntity.ok(list);
-//    }
 
     @GetMapping(value = "/product/index", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> findByProduct(
