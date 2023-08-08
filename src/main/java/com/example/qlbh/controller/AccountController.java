@@ -5,25 +5,21 @@ import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
 import com.example.qlbh.repository.AccountRepository;
 import com.example.qlbh.repository.RoleRepository;
-import com.example.qlbh.service.AccountService;
-import io.swagger.v3.oas.annotations.Parameter;
+import com.example.qlbh.service.Impl.AccountServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/account/")
 public class AccountController {
 
     @Autowired
-    AccountService accountService;
+    AccountServiceImpl accountService;
 
     @Autowired
     AccountRepository accountRepository;

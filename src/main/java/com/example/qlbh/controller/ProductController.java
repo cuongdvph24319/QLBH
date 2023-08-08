@@ -3,7 +3,7 @@ package com.example.qlbh.controller;
 import com.example.qlbh.entity.Product;
 import com.example.qlbh.model.ProductDTO;
 import com.example.qlbh.repository.ProductRepositoty;
-import com.example.qlbh.repository.repositoryImpl.ProductCustomer;
+import com.example.qlbh.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-
 @CrossOrigin("*")
 @RestController
 public class ProductController {
@@ -24,7 +21,7 @@ public class ProductController {
     ProductRepositoty productRepositoty;
 
     @Autowired
-    ProductCustomer productCustome;
+    ProductService productService;
 
 //    @GetMapping("/product/index/{id}")
 //    public ResponseEntity<Product> findById(
@@ -42,7 +39,7 @@ public class ProductController {
             @Parameter(hidden = true) Pageable pageable
 
     ) {
-        Page<Product> resp = productCustome.getAllByProductDTO(masp, tensp, loai, pageable);
+        Page<Product> resp = productService.getAllByProductDTO(masp, tensp, loai, pageable);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
