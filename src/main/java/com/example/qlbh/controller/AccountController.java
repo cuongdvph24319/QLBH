@@ -4,15 +4,17 @@ import com.example.qlbh.entity.Account;
 import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
 import com.example.qlbh.repository.AccountRepository;
-import com.example.qlbh.repository.RoleRepository;
+import com.example.qlbh.repository.RelationRepository;
 import com.example.qlbh.service.Impl.AccountServiceImpl;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/account/")
@@ -25,14 +27,16 @@ public class AccountController {
     AccountRepository accountRepository;
 
     @Autowired
-    RoleRepository roleRepository;
+    RelationRepository relationRepository;
 
-    @GetMapping("/index")
+    @GetMapping(value = "/index", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> index(
-            @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "sise", defaultValue = "1") Integer sise
+            @RequestParam(value = "ma", required = false) String ma,
+            @RequestParam(value = "ten", required = false) String tenAc,
+            @RequestParam(value = "tenNQH", required = false) String tenNQH,
+            @Parameter(hidden = true) Pageable pageable
     ) {
-        List<AccountDTO> res = accountService.getAll(page, sise);
+        Page<AccountDTO> res = accountService.getByAccountDTO(ma, tenAc, tenNQH, pageable);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
@@ -40,7 +44,7 @@ public class AccountController {
     public ResponseEntity<Account> create(
             @RequestBody @Valid AccountRequest accountRequest
     ) {
-        if (accountRepository.existsByMa(accountRequest.getMa()) || !roleRepository.existsById(accountRequest.getId())) {
+        if (accountRepository.existsByMa(accountRequest.getMa()) || !relationRepository.existsById(accountRequest.getId())) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -54,7 +58,7 @@ public class AccountController {
             @PathVariable("ma") String ma
     ) {
         Account account = accountRepository.findAccountByMa(ma);
-        if (account == null || !roleRepository.existsById(accountRequest.getId())) {
+        if (account == null || !relationRepository.existsById(accountRequest.getId())) {
             return ResponseEntity.notFound().build();
         }
         accountService.update(ma, accountRequest);

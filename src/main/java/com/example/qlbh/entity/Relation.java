@@ -12,21 +12,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "roles")
+@Table(name = "relation")
 @Builder
-public class Role {
+public class Relation {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "ma_role")
-    private String maRole;
+    @Column(name = "ma")
+    private String ma;
 
-    @Column(name = "ten_role")
-    private String tenRole;
+    @Column(name = "moi_quan_he")
+    private String tenNQH;
+
+    @Column(name = "ho_ten")
+    private String hoTen;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "relation", fetch = FetchType.LAZY)
     private List<Account> accountList = new ArrayList<>();
 }

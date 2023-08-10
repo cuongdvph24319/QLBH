@@ -1,6 +1,10 @@
 package com.example.qlbh.repository;
 
 import com.example.qlbh.entity.Account;
+import com.example.qlbh.model.AccountDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +15,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     Account findAccountByMa(String ma);
 
+    Page<Account> findAll(Specification<AccountDTO> specification, Pageable pageable);
 }
