@@ -1,7 +1,6 @@
 package com.example.qlbh.controller;
 
 import com.example.qlbh.entity.Account;
-import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
 import com.example.qlbh.repository.AccountRepository;
 import com.example.qlbh.repository.RelationRepository;
@@ -29,6 +28,7 @@ public class AccountController {
     @Autowired
     RelationRepository relationRepository;
 
+
     @GetMapping(value = "/index", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> index(
             @RequestParam(value = "ma", required = false) String ma,
@@ -36,7 +36,7 @@ public class AccountController {
             @RequestParam(value = "tenNQH", required = false) String tenNQH,
             @Parameter(hidden = true) Pageable pageable
     ) {
-        Page<AccountDTO> res = accountService.getByAccountDTO(ma, tenAc, tenNQH, pageable);
+        Page<Account> res = accountRepository.getALl(ma, tenAc, tenNQH, pageable);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 

@@ -36,13 +36,14 @@ public class Account {
     @JoinColumn(name = "relation_id")
     private Relation relation;
 
-    public void loadAccountRequestC(AccountRequest accountRequest) {
+    public Account(AccountRequest accountRequest) {
         this.setMa(accountRequest.getMa());
         this.setTen(accountRequest.getTen());
         this.setEmail(accountRequest.getEmail());
         this.setMatKhau(accountRequest.getMatKhau());
         this.setRelation(Relation.builder().id(accountRequest.getId()).build());
     }
+
 
     public void loadAccountRequestU(AccountRequest accountRequest) {
         this.setTen(accountRequest.getTen());
