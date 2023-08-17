@@ -28,7 +28,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             " and (:ma is null or a.ma = :ma)" +
             " and (:ten is null or a.ten like %:ten%)" +
             " and (:hoten is null or a.relation.hoTen like %:hoten%)")
-    Page<Account> getALl(@Param("ma") String ma, @Param("ten") String ten, @Param("hoten") String hoten, Pageable pageable);
+    Page<Account> getAll(@Param("ma") String ma, @Param("ten") String ten, @Param("hoten") String hoten, Pageable pageable);
 
 
     @Query(value = "SELECT a.id, a.relation_id, a.ma, a.ten, matkhau, email\n" +

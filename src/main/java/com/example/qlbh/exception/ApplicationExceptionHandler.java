@@ -1,4 +1,4 @@
-package com.example.qlbh.utils;
+package com.example.qlbh.exception;
 
 
 import org.springframework.http.HttpStatus;
