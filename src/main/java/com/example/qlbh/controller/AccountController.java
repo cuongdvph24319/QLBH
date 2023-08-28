@@ -49,20 +49,6 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-//    @RequestMapping(path = "saveEx")
-//    public ResponseEntity<?> saveEx(
-//            @Valid Account account,
-//            BindingResult result
-//    ) {
-//        System.out.println("AAAAAAAAAA"+ account.getMa());
-//        if (accountService.existsByMa(account.getMa())) {
-//            System.out.println("CCCCCCCCC");
-//            return ResponseEntity.badRequest().build();
-//        }
-//        accountService.saveExcelData(account);
-//        return ResponseEntity.ok().build();
-//    }
-
     @PostMapping("upload")
     public ResponseEntity<?> upload(
 
