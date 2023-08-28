@@ -27,10 +27,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service()
@@ -51,10 +48,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Object saveExcelData() throws IOException {
+    public List<ImportError> saveExcelData(MultipartFile file) throws IOException {
 
-        FileInputStream fis = new FileInputStream("F:\\TranningJava\\account.xlsx");
-        Workbook workbook = new XSSFWorkbook(fis);
+//        FileInputStream fis = new FileInputStream("F:\\TranningJava\\account.xlsx");
+        Workbook workbook = new XSSFWorkbook(file.getInputStream());
 
         Sheet sheet = workbook.getSheet("Accounts");
 
@@ -67,7 +64,12 @@ public class AccountServiceImpl implements AccountService {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
 
-        for (Row row : sheet) {
+        for (int rowIndex = 0; rowIndex < sheet.getPhysicalNumberOfRows(); rowIndex++) {
+            Row row = sheet.getRow(rowIndex);
+
+            if (rowIndex == 0) {
+                continue;
+            }
             AccountRequest accountRequest = AccountRequest.builder()
                     .id(Integer.valueOf(formatter.formatCellValue(row.getCell(0))))
                     .ma(formatter.formatCellValue(row.getCell(1)))
@@ -76,26 +78,30 @@ public class AccountServiceImpl implements AccountService {
                     .email(formatter.formatCellValue(row.getCell(4)))
                     .build();
             Set<ConstraintViolation<AccountRequest>> validate = validator.validate(accountRequest);
+            Account account = accountRepository.findAccountByMa(formatter.formatCellValue(row.getCell(1)));
+            boolean check = check(errorList, row, account);
 
-            if (validate.isEmpty()) {
-                requestList.add(accountRequest);
-                List<Account> accounts = requestList.stream().map(Account::new).collect(Collectors.toList());
-                accountRepository.saveAll(accounts);
-
-            } else {
-                Account account = accountRepository.findAccountByMa(formatter.formatCellValue(row.getCell(1)));
-                boolean check = check(errorList, row, account);
-                if (check) continue;
+            if (!validate.isEmpty() || check) {
                 for (ConstraintViolation<AccountRequest> violation : validate) {
                     errorList.add(ImportError.builder()
                             .rowNumber(String.valueOf(row.getRowNum()))
                             .error(violation.getMessage())
                             .build());
                 }
+            } else {
+                requestList.add(accountRequest);
 
             }
+
         }
-        return errorList;
+        if (!errorList.isEmpty()) {
+            return errorList;
+        } else {
+            List<Account> accounts = requestList.stream().map(Account::new).collect(Collectors.toList());
+            accountRepository.saveAll(accounts);
+            return Collections.emptyList(); // Trả về danh sách rỗng nếu không có lỗi
+        }
+
 
     }
 

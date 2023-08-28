@@ -37,7 +37,7 @@ public interface AccountService {
     Page<Account> getAll(String ma, String ten, String hoten, Pageable pageable);
 
     //    void saveExcelData(Account account);
-    Object saveExcelData() throws IOException;
+    Object saveExcelData(MultipartFile file) throws IOException;
 
 //    boolean hasExcelFormat(MultipartFile file);
 

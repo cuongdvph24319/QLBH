@@ -51,9 +51,9 @@ public class AccountController {
 
     @PostMapping("upload")
     public ResponseEntity<?> upload(
-
+            MultipartFile file
     ) throws IOException {
-        return ResponseEntity.ok(accountService.saveExcelData());
+        return ResponseEntity.ok(accountService.saveExcelData(file));
     }
 
     @PutMapping("update/{ma}")
