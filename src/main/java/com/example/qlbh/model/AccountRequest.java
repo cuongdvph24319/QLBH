@@ -1,12 +1,15 @@
 package com.example.qlbh.model;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class AccountRequest {
+
     @NotBlank(message = "Không để trống mã")
     private String ma;
 

@@ -1,6 +1,8 @@
 package com.example.qlbh.service.Impl;
 
 import com.example.qlbh.entity.Account;
+import com.example.qlbh.entity.Relation;
+import com.example.qlbh.excel.ImportError;
 import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
 import com.example.qlbh.repository.AccountRepository;
@@ -8,6 +10,12 @@ import com.example.qlbh.repository.RelationRepository;
 import com.example.qlbh.service.AccountService;
 import com.example.qlbh.utils.Utils;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -15,9 +23,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service()
@@ -31,6 +44,77 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     @Qualifier("utils")
     Utils appendLike;
+
+    @Override
+    public Page<Account> getAll(String ma, String ten, String hoten, Pageable pageable) {
+        return accountRepository.getAll(ma, ten, hoten, pageable);
+    }
+
+    @Override
+    public Object saveExcelData() throws IOException {
+
+        FileInputStream fis = new FileInputStream("F:\\TranningJava\\account.xlsx");
+        Workbook workbook = new XSSFWorkbook(fis);
+
+        Sheet sheet = workbook.getSheet("Accounts");
+
+        // định dạng giá trị trong Excel
+        DataFormatter formatter = new DataFormatter();
+
+        List<AccountRequest> requestList = new ArrayList<>();
+        List<ImportError> errorList = new ArrayList<>();
+
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+
+        for (Row row : sheet) {
+            AccountRequest accountRequest = AccountRequest.builder()
+                    .id(Integer.valueOf(formatter.formatCellValue(row.getCell(0))))
+                    .ma(formatter.formatCellValue(row.getCell(1)))
+                    .ten(formatter.formatCellValue(row.getCell(2)))
+                    .matKhau(formatter.formatCellValue(row.getCell(3)))
+                    .email(formatter.formatCellValue(row.getCell(4)))
+                    .build();
+            Set<ConstraintViolation<AccountRequest>> validate = validator.validate(accountRequest);
+
+            if (validate.isEmpty()) {
+                requestList.add(accountRequest);
+                List<Account> accounts = requestList.stream().map(Account::new).collect(Collectors.toList());
+                accountRepository.saveAll(accounts);
+
+            } else {
+                Account account = accountRepository.findAccountByMa(formatter.formatCellValue(row.getCell(1)));
+                boolean check = check(errorList, row, account);
+                if (check) continue;
+                for (ConstraintViolation<AccountRequest> violation : validate) {
+                    errorList.add(ImportError.builder()
+                            .rowNumber(String.valueOf(row.getRowNum()))
+                            .error(violation.getMessage())
+                            .build());
+                }
+
+            }
+        }
+        return errorList;
+
+    }
+
+    private boolean check(
+            List<ImportError> errorList,
+            Row row,
+            Account account
+    ) {
+        if (account != null) {
+            errorList.add(
+                    ImportError.builder()
+                            .rowNumber(String.valueOf(row.getRowNum()))
+                            .error("Mã Account đã được sử dụng")
+                            .build()
+            );
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public Account create(AccountRequest accountRequest) {
@@ -73,11 +157,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean existsByIdR(Integer id) {
         return relationRepository.existsById(id);
-    }
-
-    @Override
-    public Page<Account> getAll(String ma, String ten, String hoten, Pageable pageable) {
-        return accountRepository.getAll(ma, ten, hoten, pageable);
     }
 
 

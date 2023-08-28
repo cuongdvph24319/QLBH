@@ -11,7 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/account/")
@@ -32,6 +36,7 @@ public class AccountController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+
     @PostMapping("create")
     public ResponseEntity<Account> create(
             @RequestBody @Valid AccountRequest accountRequest
@@ -42,6 +47,27 @@ public class AccountController {
 
         accountService.create(accountRequest);
         return ResponseEntity.ok().build();
+    }
+
+//    @RequestMapping(path = "saveEx")
+//    public ResponseEntity<?> saveEx(
+//            @Valid Account account,
+//            BindingResult result
+//    ) {
+//        System.out.println("AAAAAAAAAA"+ account.getMa());
+//        if (accountService.existsByMa(account.getMa())) {
+//            System.out.println("CCCCCCCCC");
+//            return ResponseEntity.badRequest().build();
+//        }
+//        accountService.saveExcelData(account);
+//        return ResponseEntity.ok().build();
+//    }
+
+    @PostMapping("upload")
+    public ResponseEntity<?> upload(
+
+    ) throws IOException {
+        return ResponseEntity.ok(accountService.saveExcelData());
     }
 
     @PutMapping("update/{ma}")
@@ -69,5 +95,6 @@ public class AccountController {
         accountService.delete(account);
         return ResponseEntity.ok().build();
     }
+
 
 }

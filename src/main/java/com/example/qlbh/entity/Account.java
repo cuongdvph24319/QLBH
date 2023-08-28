@@ -51,4 +51,16 @@ public class Account {
         this.setMatKhau(accountRequest.getMatKhau());
         this.setRelation(Relation.builder().id(accountRequest.getId()).build());
     }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", ma='" + ma + '\'' +
+                ", ten='" + ten + '\'' +
+                ", matKhau='" + matKhau + '\'' +
+                ", email='" + email + '\'' +
+                ", relation=" + relation +
+                '}';
+    }
 }
