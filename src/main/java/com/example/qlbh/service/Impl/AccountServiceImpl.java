@@ -50,7 +50,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<ImportError> saveExcelData(MultipartFile file) throws IOException {
 
-//        FileInputStream fis = new FileInputStream("F:\\TranningJava\\account.xlsx");
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
 
         Sheet sheet = workbook.getSheet("Accounts");
@@ -79,7 +78,7 @@ public class AccountServiceImpl implements AccountService {
                     .build();
             Set<ConstraintViolation<AccountRequest>> validate = validator.validate(accountRequest);
             Account account = accountRepository.findAccountByMa(formatter.formatCellValue(row.getCell(1)));
-            boolean check = check(errorList, row, account);
+            boolean check = check(errorList, row, account, formatter);
 
             if (!validate.isEmpty() || check) {
                 for (ConstraintViolation<AccountRequest> violation : validate) {
@@ -108,12 +107,14 @@ public class AccountServiceImpl implements AccountService {
     private boolean check(
             List<ImportError> errorList,
             Row row,
-            Account account
+            Account account,
+            DataFormatter formatter
     ) {
         if (account != null) {
             errorList.add(
                     ImportError.builder()
                             .rowNumber(String.valueOf(row.getRowNum()))
+                            .value(formatter.formatCellValue(row.getCell(1)))
                             .error("Mã Account đã được sử dụng")
                             .build()
             );
