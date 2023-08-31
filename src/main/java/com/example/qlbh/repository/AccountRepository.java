@@ -19,6 +19,9 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     boolean existsByMa(String ma);
 
+    @Query(value = "select ma from Account")
+    List<String> getAllMa();
+
     Account findAccountByMa(String ma);
 
     Page<Account> findAll(Specification<AccountDTO> specification, Pageable pageable);
