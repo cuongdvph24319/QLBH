@@ -120,7 +120,7 @@ public class AccountServiceImpl implements AccountService {
             // check mat khau
             if (matKhauCell != null && matKhauCell.getStringCellValue().trim().isEmpty()) {
                 cellRef = new CellReference(row.getRowNum(), matKhauCell.getColumnIndex());
-                addErrorIfNotEmpty(errorList, row, "mat khau", cellRef, maCell, formatter, "Không để trống mật khẩu");
+                addErrorIfNotEmpty(errorList, row, "mat khau", cellRef, matKhauCell, formatter, "Không để trống mật khẩu");
             } else {
                 cellRef = new CellReference(row.getRowNum(), 3);
                 addErrorIfEmpty(errorList, row, "mat khau", matKhau, matKhauCell, formatter, "Không để trống mật khẩu", cellRef.formatAsString());
@@ -128,7 +128,7 @@ public class AccountServiceImpl implements AccountService {
             // check email
             if (emailCell != null && emailCell.getStringCellValue().trim().isEmpty()) {
                 cellRef = new CellReference(row.getRowNum(), 4);
-                addErrorIfEmpty(errorList, row, "email", matKhau, matKhauCell, formatter, "Không để trống email", cellRef.formatAsString());
+                addErrorIfEmpty(errorList, row, "email", matKhau, emailCell, formatter, "Không để trống email", cellRef.formatAsString());
             }
             // check ton tai relation_id
             if (!listRelation.contains(relationId)) {
