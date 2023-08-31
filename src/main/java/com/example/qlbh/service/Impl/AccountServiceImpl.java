@@ -53,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Object saveExcelData(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
-        CellReference cellRef;
+        CellReference cellRef = null;
         Sheet sheet = workbook.getSheet("Accounts");
 
         // định dạng giá trị trong Excel
@@ -63,8 +63,6 @@ public class AccountServiceImpl implements AccountService {
         List<ImportError> errorList = new ArrayList<>();
         List<String> listMa = accountRepository.getAllMa();
         List<Integer> listRelation = relationRepository.getAllId();
-//        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-//        Validator validator = validatorFactory.getValidator();
 
         for (int rowIndex = 0; rowIndex < sheet.getPhysicalNumberOfRows(); rowIndex++) {
             Row row = sheet.getRow(rowIndex);
@@ -73,101 +71,86 @@ public class AccountServiceImpl implements AccountService {
                 continue;
             }
 
-            Cell re_idCell = row.getCell(0);
+            Cell relationIdCell = row.getCell(0);
             Cell maCell = row.getCell(1);
             Cell tenCell = row.getCell(2);
             Cell matKhauCell = row.getCell(3);
             Cell emailCell = row.getCell(4);
 
-            Integer re_id = null;
-            try {
-                re_id = Integer.valueOf(formatter.formatCellValue(re_idCell));
-            } catch (NumberFormatException ex) {
-                // check id rong
-                if (re_idCell != null) {
-                    String re_idC = re_idCell.getStringCellValue().trim();
-                    if (re_idC.isEmpty()) {
-                        cellRef = new CellReference(row.getRowNum(), 0);
-                        addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, re_idCell, formatter, "Không để trống relation_id");
-                    }
-                } else {
-                    cellRef = new CellReference(row.getRowNum(), 0);
-                    addErrorIfEmpty(errorList, row, "relation_id", formatter.formatCellValue(re_idCell), re_idCell, formatter, "Không để trống relation_id", cellRef.formatAsString());
-                }
-            }
+            Integer relationId = null;
             String ma = formatter.formatCellValue(maCell);
             String ten = formatter.formatCellValue(tenCell);
             String matKhau = formatter.formatCellValue(matKhauCell);
             String email = formatter.formatCellValue(emailCell);
 
-            AccountRequest accountRequest = new AccountRequest(
-                    re_id,
-                    ma,
-                    ten,
-                    matKhau,
-                    email
-            );
-
+            try {
+                relationId = Integer.valueOf(formatter.formatCellValue(relationIdCell));
+            } catch (NumberFormatException ex) {
+                // check id rong
+                if (relationIdCell != null && relationIdCell.getCellType() == CellType.STRING && !relationIdCell.getStringCellValue().trim().isEmpty()) {
+                    cellRef = new CellReference(row.getRowNum(), relationIdCell.getColumnIndex());
+                    addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, relationIdCell, formatter, "Id không thể là chữ");
+                } else if (relationIdCell != null && relationIdCell.getStringCellValue().trim().isEmpty()) {
+                    cellRef = new CellReference(row.getRowNum(), relationIdCell.getColumnIndex());
+                    addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, relationIdCell, formatter, "Không để trống relation_id");
+                } else {
+                    cellRef = new CellReference(row.getRowNum(), 0);
+                    addErrorIfEmpty(errorList, row, "relation_id", formatter.formatCellValue(relationIdCell), relationIdCell, formatter, "Không để trống relation_id", cellRef.formatAsString());
+                }
+            }
 
             // check ma
-            if (maCell != null) {
-                String maC = maCell.getStringCellValue().trim();
-                if (maC.isEmpty()) {
-                    cellRef = new CellReference(row.getRowNum(), 1);
-                    addErrorIfNotEmpty(errorList, row, "ma", cellRef, maCell, formatter, "Không để trống mã");
-                }
+            if (maCell != null && maCell.getStringCellValue().trim().isEmpty()) {
+                cellRef = new CellReference(row.getRowNum(), maCell.getColumnIndex());
+                addErrorIfNotEmpty(errorList, row, "ma", cellRef, maCell, formatter, "Không để trống mã");
 
             } else {
                 cellRef = new CellReference(row.getRowNum(), 1);
                 addErrorIfEmpty(errorList, row, "ma", ma, maCell, formatter, "Không để trống mã", cellRef.formatAsString());
             }
             // check ten
-            if (tenCell != null) {
-                String tenC = tenCell.getStringCellValue().trim();
-                if (tenC.isEmpty()) {
-                    cellRef = new CellReference(row.getRowNum(), 2);
-                    addErrorIfNotEmpty(errorList, row, "ten", cellRef, maCell, formatter, "Không để trống tên");
-                }
+            if (tenCell != null && tenCell.getStringCellValue().trim().isEmpty()) {
+                cellRef = new CellReference(row.getRowNum(), tenCell.getColumnIndex());
+                addErrorIfNotEmpty(errorList, row, "ten", cellRef, tenCell, formatter, "Không để trống tên");
 
             } else {
                 cellRef = new CellReference(row.getRowNum(), 2);
                 addErrorIfEmpty(errorList, row, "ten", ten, tenCell, formatter, "Không để trống tên", cellRef.formatAsString());
             }
             // check mat khau
-            if (matKhauCell != null) {
-                String matKhauC = matKhauCell.getStringCellValue().trim();
-                if (matKhauC.isEmpty()) {
-                    cellRef = new CellReference(row.getRowNum(), 3);
-                    addErrorIfNotEmpty(errorList, row, "mat khau", cellRef, maCell, formatter, "Không để trống mật khẩu");
-                }
-
+            if (matKhauCell != null && matKhauCell.getStringCellValue().trim().isEmpty()) {
+                cellRef = new CellReference(row.getRowNum(), matKhauCell.getColumnIndex());
+                addErrorIfNotEmpty(errorList, row, "mat khau", cellRef, maCell, formatter, "Không để trống mật khẩu");
             } else {
                 cellRef = new CellReference(row.getRowNum(), 3);
                 addErrorIfEmpty(errorList, row, "mat khau", matKhau, matKhauCell, formatter, "Không để trống mật khẩu", cellRef.formatAsString());
             }
             // check email
-            if (emailCell != null) {
-                String emailC = emailCell.getStringCellValue().trim();
-                if (emailC.isEmpty()) {
-                    cellRef = new CellReference(row.getRowNum(), 4);
-                    addErrorIfEmpty(errorList, row, "email", matKhau, matKhauCell, formatter, "Không để trống email", cellRef.formatAsString());
-                }
-
+            if (emailCell != null && emailCell.getStringCellValue().trim().isEmpty()) {
+                cellRef = new CellReference(row.getRowNum(), 4);
+                addErrorIfEmpty(errorList, row, "email", matKhau, matKhauCell, formatter, "Không để trống email", cellRef.formatAsString());
             }
-
-//            Set<ConstraintViolation<AccountRequest>> validate = validator.validate(accountRequest);
             // check ton tai relation_id
-            if (!listRelation.contains(re_id)) {
+            if (!listRelation.contains(relationId)) {
                 cellRef = new CellReference(row.getRowNum(), 0);
-                addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, re_idCell, formatter, "Không tồn tại relation_id này");
-            }            // check trung ma
+                addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, relationIdCell, formatter, "Không tồn tại relation_id này");
+            }
+            // check trung ma
             if (listMa.contains(ma)) {
                 cellRef = new CellReference(row.getRowNum(), 1);
                 addErrorIfNotEmpty(errorList, row, "ma", cellRef, maCell, formatter, "Mã Account đã được sử dụng");
             }
-            requestList.add(accountRequest);
 
+            AccountRequest accountRequest = new AccountRequest(
+                    relationId,
+                    ma,
+                    ten,
+                    matKhau,
+                    email
+            );
+            requestList.add(accountRequest);
         }
+
         if (!errorList.isEmpty()) {
             return errorList;
         } else {
