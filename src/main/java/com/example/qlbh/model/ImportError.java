@@ -1,4 +1,4 @@
-package com.example.qlbh.excel;
+package com.example.qlbh.model;
 
 import lombok.*;
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Cell;
 public class ImportError {
     private String rowNumber;
 
-    private String column;
+    private String columnName;
 
     private String cell;
 

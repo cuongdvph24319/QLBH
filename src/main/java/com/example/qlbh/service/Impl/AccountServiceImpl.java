@@ -1,35 +1,28 @@
 package com.example.qlbh.service.Impl;
 
 import com.example.qlbh.entity.Account;
-import com.example.qlbh.entity.Relation;
-import com.example.qlbh.excel.ImportError;
 import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
+import com.example.qlbh.model.ImportError;
 import com.example.qlbh.repository.AccountRepository;
 import com.example.qlbh.repository.RelationRepository;
 import com.example.qlbh.service.AccountService;
 import com.example.qlbh.utils.Utils;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service()
@@ -40,9 +33,6 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     RelationRepository relationRepository;
 
-    @Autowired
-    @Qualifier("utils")
-    Utils appendLike;
 
     @Override
     public Page<Account> getAll(String ma, String ten, String hoten, Pageable pageable) {
@@ -51,9 +41,9 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Object saveExcelData(MultipartFile file) throws IOException {
+    public List<?> saveExcelData(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
-        CellReference cellRef = null;
+        CellReference cellRef;
         Sheet sheet = workbook.getSheet("Accounts");
 
         // định dạng giá trị trong Excel
@@ -61,12 +51,17 @@ public class AccountServiceImpl implements AccountService {
 
         List<AccountRequest> requestList = new ArrayList<>();
         List<ImportError> errorList = new ArrayList<>();
-        List<String> listMa = accountRepository.getAllMa();
+        List<String> listMa = accountRepository.getAllCode();
         List<Integer> listRelation = relationRepository.getAllId();
 
         for (int rowIndex = 0; rowIndex < sheet.getPhysicalNumberOfRows(); rowIndex++) {
             Row row = sheet.getRow(rowIndex);
-
+            String messageError = "Không để trống ";
+            String columnId = "relation_id";
+            String columnCode = "ma";
+            String columnName = "ten";
+            String columnPass = "mat khau";
+            String columnEmail = "email";
             if (rowIndex == 0 || !rowHasData(row)) {
                 continue;
             }
@@ -89,56 +84,56 @@ public class AccountServiceImpl implements AccountService {
                 // check id rong
                 if (relationIdCell != null && relationIdCell.getCellType() == CellType.STRING && !relationIdCell.getStringCellValue().trim().isEmpty()) {
                     cellRef = new CellReference(row.getRowNum(), relationIdCell.getColumnIndex());
-                    addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, relationIdCell, formatter, "Id không thể là chữ");
+                    addErrorIfNotEmpty(errorList, row, columnId, cellRef, relationIdCell, formatter, columnId + "không thể là chữ");
                 } else if (relationIdCell != null && relationIdCell.getStringCellValue().trim().isEmpty()) {
                     cellRef = new CellReference(row.getRowNum(), relationIdCell.getColumnIndex());
-                    addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, relationIdCell, formatter, "Không để trống relation_id");
+                    addErrorIfNotEmpty(errorList, row, columnId, cellRef, relationIdCell, formatter, messageError + columnId);
                 } else {
                     cellRef = new CellReference(row.getRowNum(), 0);
-                    addErrorIfEmpty(errorList, row, "relation_id", formatter.formatCellValue(relationIdCell), relationIdCell, formatter, "Không để trống relation_id", cellRef.formatAsString());
+                    addErrorIfEmpty(errorList, row, columnId, formatter.formatCellValue(relationIdCell), relationIdCell, formatter, messageError + columnId, cellRef.formatAsString());
                 }
             }
 
             // check ma
             if (maCell != null && maCell.getStringCellValue().trim().isEmpty()) {
                 cellRef = new CellReference(row.getRowNum(), maCell.getColumnIndex());
-                addErrorIfNotEmpty(errorList, row, "ma", cellRef, maCell, formatter, "Không để trống mã");
+                addErrorIfNotEmpty(errorList, row, columnCode, cellRef, maCell, formatter, messageError + columnCode);
 
             } else {
                 cellRef = new CellReference(row.getRowNum(), 1);
-                addErrorIfEmpty(errorList, row, "ma", ma, maCell, formatter, "Không để trống mã", cellRef.formatAsString());
+                addErrorIfEmpty(errorList, row, columnCode, ma, maCell, formatter, messageError + columnCode, cellRef.formatAsString());
             }
             // check ten
             if (tenCell != null && tenCell.getStringCellValue().trim().isEmpty()) {
                 cellRef = new CellReference(row.getRowNum(), tenCell.getColumnIndex());
-                addErrorIfNotEmpty(errorList, row, "ten", cellRef, tenCell, formatter, "Không để trống tên");
+                addErrorIfNotEmpty(errorList, row, columnName, cellRef, tenCell, formatter, messageError + columnName);
 
             } else {
                 cellRef = new CellReference(row.getRowNum(), 2);
-                addErrorIfEmpty(errorList, row, "ten", ten, tenCell, formatter, "Không để trống tên", cellRef.formatAsString());
+                addErrorIfEmpty(errorList, row, columnName, ten, tenCell, formatter, messageError + columnName, cellRef.formatAsString());
             }
             // check mat khau
             if (matKhauCell != null && matKhauCell.getStringCellValue().trim().isEmpty()) {
                 cellRef = new CellReference(row.getRowNum(), matKhauCell.getColumnIndex());
-                addErrorIfNotEmpty(errorList, row, "mat khau", cellRef, matKhauCell, formatter, "Không để trống mật khẩu");
+                addErrorIfNotEmpty(errorList, row, columnPass, cellRef, matKhauCell, formatter, messageError + columnPass);
             } else {
                 cellRef = new CellReference(row.getRowNum(), 3);
-                addErrorIfEmpty(errorList, row, "mat khau", matKhau, matKhauCell, formatter, "Không để trống mật khẩu", cellRef.formatAsString());
+                addErrorIfEmpty(errorList, row, columnPass, matKhau, matKhauCell, formatter, messageError + columnPass, cellRef.formatAsString());
             }
             // check email
             if (emailCell != null && emailCell.getStringCellValue().trim().isEmpty()) {
                 cellRef = new CellReference(row.getRowNum(), 4);
-                addErrorIfEmpty(errorList, row, "email", matKhau, emailCell, formatter, "Không để trống email", cellRef.formatAsString());
+                addErrorIfEmpty(errorList, row, columnEmail, email, emailCell, formatter, messageError + columnEmail, cellRef.formatAsString());
             }
             // check ton tai relation_id
             if (!listRelation.contains(relationId)) {
                 cellRef = new CellReference(row.getRowNum(), 0);
-                addErrorIfNotEmpty(errorList, row, "relation_id", cellRef, relationIdCell, formatter, "Không tồn tại relation_id này");
+                addErrorIfNotEmpty(errorList, row, columnId, cellRef, relationIdCell, formatter, "Không tồn tại " + columnId);
             }
             // check trung ma
             if (listMa.contains(ma)) {
                 cellRef = new CellReference(row.getRowNum(), 1);
-                addErrorIfNotEmpty(errorList, row, "ma", cellRef, maCell, formatter, "Mã Account đã được sử dụng");
+                addErrorIfNotEmpty(errorList, row, columnCode, cellRef, maCell, formatter, columnCode + " đã tồn tại");
             }
 
             AccountRequest accountRequest = new AccountRequest(
@@ -155,7 +150,8 @@ public class AccountServiceImpl implements AccountService {
             return errorList;
         } else {
             List<Account> accounts = requestList.stream().map(Account::new).collect(Collectors.toList());
-            return accountRepository.saveAll(accounts);
+            accountRepository.saveAll(accounts);
+            return accounts.stream().map(AccountRequest::new).collect(Collectors.toList());
         }
 
 
@@ -164,7 +160,7 @@ public class AccountServiceImpl implements AccountService {
     private void addErrorIfNotEmpty(
             List<ImportError> errorList,
             Row row,
-            String column,
+            String columnName,
             CellReference cellRef,
             Cell cell,
             DataFormatter formatter,
@@ -173,7 +169,7 @@ public class AccountServiceImpl implements AccountService {
         if (cell != null && !formatter.formatCellValue(cell).trim().isEmpty()) {
             ImportError importError = new ImportError(
                     String.valueOf(row.getRowNum() + 1),
-                    column,
+                    columnName,
                     cellRef.formatAsString(),
                     formatter.formatCellValue(cell),
                     errorMessage
@@ -185,7 +181,7 @@ public class AccountServiceImpl implements AccountService {
     private void addErrorIfEmpty(
             List<ImportError> errorList,
             Row row,
-            String column,
+            String columnName,
             String value,
             Cell cell,
             DataFormatter formatter,
@@ -195,7 +191,7 @@ public class AccountServiceImpl implements AccountService {
         if (value.isEmpty()) {
             ImportError importError = new ImportError(
                     String.valueOf(row.getRowNum() + 1),
-                    column,
+                    columnName,
                     cells,
                     formatter.formatCellValue(cell),
                     errorMessage
@@ -294,12 +290,13 @@ public class AccountServiceImpl implements AccountService {
 //            }
 //            if (tenAccount != null) {
 //                predicates.add(criteriaBuilder.like(
-//                        root.get("ten"), appendLike.appendLike(tenAccount)
+//                        root.get("ten"),
+//                        Utils.appendLike(tenAccount)
 //                ));
 //            }
 //            if (tenNQH != null) {
 //                predicates.add(criteriaBuilder.like(
-//                        root.get("relation").get("hoTen"), appendLike.appendLike(tenNQH)
+//                        root.get("relation").get("hoTen"), Utils.appendLike(tenNQH)
 //                ));
 //            }
 //            return criteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();

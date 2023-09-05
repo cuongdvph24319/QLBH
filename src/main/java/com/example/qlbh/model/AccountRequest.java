@@ -1,5 +1,6 @@
 package com.example.qlbh.model;
 
+import com.example.qlbh.entity.Account;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -24,5 +25,12 @@ public class AccountRequest {
     @NotBlank(message = "Không để trống email")
     private String email;
 
+    public AccountRequest(Account account) {
+        this.setMa(account.getMa());
+        this.setTen(account.getTen());
+        this.setMatKhau(account.getMatKhau());
+        this.setEmail(account.getEmail());
+        this.setId(account.getRelation().getId());
+    }
 
 }

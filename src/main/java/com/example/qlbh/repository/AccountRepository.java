@@ -20,7 +20,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     boolean existsByMa(String ma);
 
     @Query(value = "select ma from Account")
-    List<String> getAllMa();
+    List<String> getAllCode();
 
     Account findAccountByMa(String ma);
 

@@ -1,6 +1,7 @@
 package com.example.qlbh.controller;
 
 import com.example.qlbh.entity.Account;
+import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
 import com.example.qlbh.service.AccountService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,7 +25,6 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
-
     @GetMapping(value = "/index", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> index(
             @RequestParam(value = "ma", required = false) String ma,
@@ -38,15 +38,16 @@ public class AccountController {
 
 
     @PostMapping("create")
-    public ResponseEntity<Account> create(
+    public ResponseEntity<?> create(
             @RequestBody @Valid AccountRequest accountRequest
     ) {
-        if (accountService.existsByMa(accountRequest.getMa()) || !accountService.existsById(accountRequest.getId())) {
+        if (accountService.existsByMa(accountRequest.getMa()) || !accountService.existsByIdR(accountRequest.getId())) {
             return ResponseEntity.badRequest().build();
         }
 
-        accountService.create(accountRequest);
-        return ResponseEntity.ok().build();
+        Account account = accountService.create(accountRequest);
+        accountRequest = new AccountRequest(account);
+        return ResponseEntity.ok(accountRequest);
     }
 
     @PostMapping("upload")
@@ -65,8 +66,9 @@ public class AccountController {
         if (account == null || !accountService.existsByIdR(accountRequest.getId())) {
             return ResponseEntity.notFound().build();
         }
-        accountService.update(ma, accountRequest);
-        return ResponseEntity.ok().build();
+        account = accountService.update(ma, accountRequest);
+        accountRequest = new AccountRequest(account);
+        return ResponseEntity.ok(accountRequest);
     }
 
     @DeleteMapping("delete/{id}")
