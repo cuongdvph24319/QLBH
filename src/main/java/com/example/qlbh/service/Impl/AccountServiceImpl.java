@@ -41,6 +41,12 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.getAll(ma, ten, hoten, pageable);
     }
 
+    static String messageError;
+    static String columnId;
+    static String columnCode;
+    static String columnName;
+    static String columnPass;
+    static String columnEmail;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -59,12 +65,13 @@ public class AccountServiceImpl implements AccountService {
 
         for (int rowIndex = 0; rowIndex < sheet.getPhysicalNumberOfRows(); rowIndex++) {
             Row row = sheet.getRow(rowIndex);
-            String messageError = "Không để trống ";
-            String columnId = "relation_id";
-            String columnCode = "ma";
-            String columnName = "ten";
-            String columnPass = "mat khau";
-            String columnEmail = "email";
+            messageError = "Không để trống ";
+            columnId = "relation_id";
+            columnCode = "ma";
+            columnName = "ten";
+            columnPass = "mat khau";
+            columnEmail = "email";
+
             if (rowIndex == 0 || !rowHasData(row)) {
                 continue;
             }
@@ -150,12 +157,12 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if (!errorList.isEmpty()) {
-            return new ImportResult(new ArrayList<>(), errorList);
+            return new ImportResult("", errorList);
         } else {
             List<Account> accounts = requestList.stream().map(Account::new).collect(Collectors.toList());
             accountRepository.saveAll(accounts);
-            List<AccountRequest> accountRequestList = accounts.stream().map(AccountRequest::new).collect(Collectors.toList());
-            return new ImportResult(accountRequestList, new ArrayList<>());
+//            List<AccountRequest> accountRequestList = accounts.stream().map(AccountRequest::new).collect(Collectors.toList());
+            return new ImportResult("Thêm dữ liệu thành công", new ArrayList<>());
         }
 
 
