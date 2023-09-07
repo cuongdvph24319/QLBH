@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("accountRepository")
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     boolean existsByMa(String ma);

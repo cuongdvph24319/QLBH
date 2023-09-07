@@ -4,20 +4,22 @@ import com.example.qlbh.entity.Account;
 import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
 import com.example.qlbh.model.ImportError;
+import com.example.qlbh.model.ImportResult;
 import com.example.qlbh.repository.AccountRepository;
 import com.example.qlbh.repository.RelationRepository;
 import com.example.qlbh.service.AccountService;
 import com.example.qlbh.utils.Utils;
+import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,12 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service()
+@Service("accountService")
 public class AccountServiceImpl implements AccountService {
-    @Autowired
+    @Resource(name = "accountRepository")
     AccountRepository accountRepository;
 
-    @Autowired
+    @Resource(name = "relationRepository")
     RelationRepository relationRepository;
 
 
@@ -41,7 +43,8 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public List<?> saveExcelData(MultipartFile file) throws IOException {
+    @Transactional(rollbackFor = Exception.class)
+    public ImportResult saveExcelData(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
         CellReference cellRef;
         Sheet sheet = workbook.getSheet("Accounts");
@@ -147,11 +150,12 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if (!errorList.isEmpty()) {
-            return errorList;
+            return new ImportResult(new ArrayList<>(), errorList);
         } else {
             List<Account> accounts = requestList.stream().map(Account::new).collect(Collectors.toList());
             accountRepository.saveAll(accounts);
-            return accounts.stream().map(AccountRequest::new).collect(Collectors.toList());
+            List<AccountRequest> accountRequestList = accounts.stream().map(AccountRequest::new).collect(Collectors.toList());
+            return new ImportResult(accountRequestList, new ArrayList<>());
         }
 
 

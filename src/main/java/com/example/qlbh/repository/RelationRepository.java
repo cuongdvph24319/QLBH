@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("relationRepository")
 public interface RelationRepository extends JpaRepository<Relation, Integer> {
     @Query(value = "select id from Relation ")
     List<Integer> getAllId();

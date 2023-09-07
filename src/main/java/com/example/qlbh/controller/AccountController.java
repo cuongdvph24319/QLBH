@@ -3,8 +3,10 @@ package com.example.qlbh.controller;
 import com.example.qlbh.entity.Account;
 import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountRequest;
+import com.example.qlbh.repository.AccountRepository;
 import com.example.qlbh.service.AccountService;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +24,7 @@ import java.io.IOException;
 @RequestMapping("/api/account/")
 public class AccountController {
 
-    @Autowired
+    @Resource(name = "accountService")
     AccountService accountService;
 
     @GetMapping(value = "/index", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,7 +40,7 @@ public class AccountController {
 
 
     @PostMapping("create")
-    public ResponseEntity<?> create(
+    public ResponseEntity<AccountRequest> create(
             @RequestBody @Valid AccountRequest accountRequest
     ) {
         if (accountService.existsByMa(accountRequest.getMa()) || !accountService.existsByIdR(accountRequest.getId())) {
@@ -58,7 +60,7 @@ public class AccountController {
     }
 
     @PutMapping("update/{ma}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<AccountRequest> update(
             @RequestBody @Valid AccountRequest accountRequest,
             @PathVariable("ma") String ma
     ) {
