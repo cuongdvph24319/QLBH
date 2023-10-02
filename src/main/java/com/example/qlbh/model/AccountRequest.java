@@ -1,6 +1,9 @@
 package com.example.qlbh.model;
 
 import com.example.qlbh.entity.Account;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -17,6 +20,7 @@ public class AccountRequest {
     private String ma;
 
     @NotBlank(message = "Không để trống tên")
+    @SerializedName("ten")
     private String ten;
 
     @NotBlank(message = "Không để trống mật khẩu")
@@ -33,4 +37,14 @@ public class AccountRequest {
         this.setId(account.getRelation().getId());
     }
 
+    @Override
+    public String toString() {
+        return "AccountRequest{" +
+                "id=" + id +
+                ", ma='" + ma + '\'' +
+                ", tenMoi='" + ten + '\'' +
+                ", matKhau='" + matKhau + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

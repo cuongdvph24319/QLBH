@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "spring.jackson.dataformat.xml.enabled",
+      "type": "java.lang.String",
+      "description": "Description for spring.jackson.dataformat.xml.enabled."
+    },
+    {
+      "name": "spring.jackson.dataformat.xml.enabled",
+      "type": "java.lang.String",
+      "description": "Description for spring.jackson.dataformat.xml.enabled."
+    }
+  ] }

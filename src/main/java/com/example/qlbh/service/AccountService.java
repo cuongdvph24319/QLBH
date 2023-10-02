@@ -4,9 +4,12 @@ import com.example.qlbh.entity.Account;
 import com.example.qlbh.model.AccountDTO;
 import com.example.qlbh.model.AccountDTO2;
 import com.example.qlbh.model.AccountRequest;
+import com.example.qlbh.model.CustomException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +22,7 @@ import java.util.Set;
 public interface AccountService {
 //    Page<AccountDTO> getAll(Pageable pageable);
 
-    Account create(AccountRequest accountRequest);
+    Account create(AccountRequest accountRequest) throws CustomException;
 
     Account update(String ma, AccountRequest accountRequest);
 
@@ -42,6 +45,5 @@ public interface AccountService {
 
 //    boolean hasExcelFormat(MultipartFile file);
 
-
-//    Page<AccountDTO> getByAccountDTO(String maAccount, String tenAccount, String tenNQH, Pageable pageable);
+    Page<AccountDTO> getByAccountDTO(String maAccount, String tenAccount, String tenNQH, Pageable pageable);
 }

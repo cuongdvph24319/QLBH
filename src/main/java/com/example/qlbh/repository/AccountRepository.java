@@ -22,6 +22,9 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query(value = "select ma from Account")
     List<String> getAllCode();
 
+    @Query(value = "select ma from Accounta", nativeQuery = true)
+    List<String> getError();
+
     Account findAccountByMa(String ma);
 
     Page<Account> findAll(Specification<AccountDTO> specification, Pageable pageable);

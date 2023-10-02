@@ -1,33 +1,47 @@
 package com.example.qlbh.service.Impl;
 
 import com.example.qlbh.entity.Account;
-import com.example.qlbh.model.AccountDTO;
-import com.example.qlbh.model.AccountRequest;
-import com.example.qlbh.model.ImportError;
-import com.example.qlbh.model.ImportResult;
+import com.example.qlbh.model.*;
+import com.example.qlbh.model.CustomException;
 import com.example.qlbh.repository.AccountRepository;
 import com.example.qlbh.repository.RelationRepository;
 import com.example.qlbh.service.AccountService;
 import com.example.qlbh.utils.Utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.postgresql.util.PSQLException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service("accountService")
+@Slf4j
 public class AccountServiceImpl implements AccountService {
     @Resource(name = "accountRepository")
     AccountRepository accountRepository;
@@ -35,21 +49,19 @@ public class AccountServiceImpl implements AccountService {
     @Resource(name = "relationRepository")
     RelationRepository relationRepository;
 
-
     @Override
     public Page<Account> getAll(String ma, String ten, String hoten, Pageable pageable) {
         return accountRepository.getAll(ma, ten, hoten, pageable);
     }
 
-    static String messageError;
-    static String columnId;
-    static String columnCode;
-    static String columnName;
-    static String columnPass;
-    static String columnEmail;
+    public static String messageError = "Không để trống ";
+    public static String columnId = "relation_id";
+    public static String columnCode = "ma";
+    public static String columnName = "ten";
+    public static String columnPass = "mat khau";
+    public static String columnEmail = "email";
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public ImportResult saveExcelData(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
         CellReference cellRef;
@@ -65,12 +77,6 @@ public class AccountServiceImpl implements AccountService {
 
         for (int rowIndex = 0; rowIndex < sheet.getPhysicalNumberOfRows(); rowIndex++) {
             Row row = sheet.getRow(rowIndex);
-            messageError = "Không để trống ";
-            columnId = "relation_id";
-            columnCode = "ma";
-            columnName = "ten";
-            columnPass = "mat khau";
-            columnEmail = "email";
 
             if (rowIndex == 0 || !rowHasData(row)) {
                 continue;
@@ -246,8 +252,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    //DataIntegrityViolationException.class
+//    @Transactional(noRollbackFor = Exception.class)
     public Account create(AccountRequest accountRequest) {
+
         Account account = new Account(accountRequest);
+//        try {
+//            List<String> list = accountRepository.getError();
+//            accountRequest.setMa(UUID.randomUUID().toString().substring(0, 3));
+//            accountRequest.setId(1);
+//            Account account1 = new Account(accountRequest);
+//
+//            accountRepository.save(account1);
+            //IndexOutOfBoundsException
+//        String ma = listMa.get(4);
+//         int a = 1 / 0;    //ArithmeticException
+//        } catch (DataIntegrityViolationException e) {
+//            log.error(e.getMessage(), e);
+////            throw new CustomException("Lỗi rồi");
+//        }
         return accountRepository.save(account);
     }
 
@@ -289,34 +312,34 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-//    @Override
-//    public Page<AccountDTO> getByAccountDTO(String maAccount, String tenAccount, String tenNQH, Pageable pageable) {
-//        Specification<AccountDTO> specification = (root, criteriaQuery, criteriaBuilder) -> {
-//            List<Predicate> predicates = new ArrayList<>();
-//
-//            if (maAccount != null) {
-//                predicates.add(criteriaBuilder.equal(
-//                        root.get("ma"), maAccount
-//                ));
-//            }
-//            if (tenAccount != null) {
-//                predicates.add(criteriaBuilder.like(
-//                        root.get("ten"),
-//                        Utils.appendLike(tenAccount)
-//                ));
-//            }
-//            if (tenNQH != null) {
-//                predicates.add(criteriaBuilder.like(
-//                        root.get("relation").get("hoTen"), Utils.appendLike(tenNQH)
-//                ));
-//            }
-//            return criteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();
-//        };
-//
-//        Page<Account> accounts = accountRepository.findAll(specification, pageable);
-//        List<AccountDTO> accountDTOS = accounts.getContent().stream().map(AccountDTO::new).collect(Collectors.toList());
-//        return new PageImpl<>(accountDTOS, pageable, accounts.getTotalElements());
-//
-//    }
+    @Override
+    public Page<AccountDTO> getByAccountDTO(String maAccount, String tenAccount, String tenNQH, Pageable pageable) {
+        Specification<AccountDTO> specification = (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (maAccount != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("ma"), maAccount
+                ));
+            }
+            if (tenAccount != null) {
+                predicates.add(criteriaBuilder.like(
+                        root.get("ten"),
+                        Utils.appendLike(tenAccount)
+                ));
+            }
+            if (tenNQH != null) {
+                predicates.add(criteriaBuilder.like(
+                        root.get("relation").get("hoTen"), Utils.appendLike(tenNQH)
+                ));
+            }
+            return criteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();
+        };
+
+        Page<Account> accounts = accountRepository.findAll(specification, pageable);
+        List<AccountDTO> accountDTOS = accounts.getContent().stream().map(AccountDTO::new).collect(Collectors.toList());
+        return new PageImpl<>(accountDTOS, pageable, accounts.getTotalElements());
+
+    }
 
 }
