@@ -48,8 +48,7 @@ public class ProductController {
         if (productRepositoty.existsByMasp(productDTO.getMasp())) {
             return ResponseEntity.badRequest().build();
         }
-        Product product = new Product();
-        product.loadDTOC(productDTO);
+        Product product = new Product(productDTO);
         productRepositoty.save(product);
         return ResponseEntity.ok(product);
     }

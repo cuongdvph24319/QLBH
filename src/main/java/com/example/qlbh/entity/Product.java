@@ -2,9 +2,6 @@ package com.example.qlbh.entity;
 
 import com.example.qlbh.model.ProductDTO;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +46,7 @@ public class Product {
     @Column(name = "trangthai")
     private Integer trangThai;
 
-    public void loadDTOC(ProductDTO productDTO) {
+    public Product(ProductDTO productDTO) {
         this.setMasp(productDTO.getMasp());
         this.setTensp(productDTO.getTensp());
         this.setLoai(productDTO.getLoai());
@@ -60,6 +57,19 @@ public class Product {
         this.setChieuRong(productDTO.getChieuRong());
         this.setTrangThai(productDTO.getTrangThai());
     }
+
+//    public Product(String masp, String tensp, Double gia, Double khoiLuong, Double chieuCao, Double chieuDai, Double chieuRong, String loai, Integer trangThai) {
+//        this.masp = masp;
+//        this.tensp = tensp;
+//        this.gia = gia;
+//        this.khoiLuong = khoiLuong;
+//        this.chieuCao = chieuCao;
+//        this.chieuDai = chieuDai;
+//        this.chieuRong = chieuRong;
+//        this.loai = loai;
+//        this.trangThai = trangThai;
+//    }
+
     public void loadDTOU(ProductDTO productDTO) {
         this.setTensp(productDTO.getTensp());
         this.setLoai(productDTO.getLoai());

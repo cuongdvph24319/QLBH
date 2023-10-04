@@ -2,8 +2,6 @@ package com.example.qlbh.repository;
 
 import com.example.qlbh.entity.Account;
 import com.example.qlbh.model.AccountDTO;
-import com.example.qlbh.model.AccountDTO2;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
