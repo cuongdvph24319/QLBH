@@ -32,13 +32,13 @@ import java.util.Map;
 public class AccountController {
 
     @Resource(name = "accountService")
-    AccountService accountService;
+    private AccountService accountService;
 
     @Resource(name = "accountRepository")
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
-    @Autowired
-    RestTemplate restTemplate;
+
+    RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping(value = "/index", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> index(
@@ -142,7 +142,8 @@ public class AccountController {
         Gson gson = new Gson();
 
         // Chuyển đổi JSON thành list đối tượng
-        List<AccountRequest> accounts = gson.fromJson(json, new TypeToken<List<AccountRequest>>(){}.getType());
+        List<AccountRequest> accounts = gson.fromJson(json, new TypeToken<List<AccountRequest>>() {
+        }.getType());
 //        AccountRequest accounts = gson.fromJson(json, AccountRequest.class);
         return ResponseEntity.ok(accounts);
     }

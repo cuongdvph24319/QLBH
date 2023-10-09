@@ -1,7 +1,7 @@
 package com.example.qlbh.entity;
 
 
-import com.example.qlbh.model.TaskRequest;
+import com.example.qlbh.entity.Task;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

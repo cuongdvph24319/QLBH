@@ -3,6 +3,7 @@ package com.example.qlbh.service.Impl;
 import com.example.qlbh.entity.Product;
 import com.example.qlbh.repository.ProductRepositoty;
 import com.example.qlbh.service.ProductService;
+import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service()
+@Service("productService")
 public class ProductServiceImpl implements ProductService {
-    @Autowired
+    @Resource(name = "productRepositoty")
     ProductRepositoty productRepositoty;
 
     @Override

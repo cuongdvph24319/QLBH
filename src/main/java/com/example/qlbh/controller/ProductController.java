@@ -5,6 +5,7 @@ import com.example.qlbh.model.ProductDTO;
 import com.example.qlbh.repository.ProductRepositoty;
 import com.example.qlbh.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("*")
 @RestController
 public class ProductController {
-    @Autowired
+    @Resource(name = "productRepositoty")
     ProductRepositoty productRepositoty;
 
-    @Autowired
+    @Resource(name = "productService")
     ProductService productService;
 
 //    @GetMapping("/product/index/{id}")

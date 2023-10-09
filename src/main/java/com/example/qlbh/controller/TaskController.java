@@ -1,5 +1,6 @@
 package com.example.qlbh.controller;
 
+import com.example.qlbh.entity.Task;
 import com.example.qlbh.model.TaskRequest;
 import com.example.qlbh.service.TaskService;
 import jakarta.annotation.Resource;
@@ -19,7 +20,7 @@ public class TaskController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(
+    public ResponseEntity<Object> create(
             @RequestBody TaskRequest taskRequest
     ) {
         try {
@@ -31,7 +32,7 @@ public class TaskController {
     }
 
     @PutMapping("update/{name}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<Object> update(
             @PathVariable("name") String name,
             @RequestBody TaskRequest taskRequest
     ) {

@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class JpaAuditingConfig {
     @Bean
     public AuditorAware<String> auditorProvider() {
-        return () -> java.util.Optional.of("system");
+        return () -> java.util.Optional.of("cuongdv");
     }
 }

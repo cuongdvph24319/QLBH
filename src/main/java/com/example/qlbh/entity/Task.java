@@ -22,7 +22,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +58,9 @@ public class Task {
     @LastModifiedDate
     @Column(name = "updateddate")
     private LocalDateTime updatedDate;
+
+    public Task() {
+    }
 
     public Task(TaskRequest taskRequest) {
         this.setName(taskRequest.getName());
